@@ -5,16 +5,16 @@
 
     <data>
         <variable
-                name="commitListVm"
-                type="com.xiiilab.socialtest.vm.GithubCommitListViewModel"/>
+                name="userEventsListVm"
+                type="com.xiiilab.socialtest.vm.UserEventsListViewModel"/>
     </data>
 
     <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/commit_list"
+            android:id="@+id/user_events_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:showIn="@layout/content_main"
             tools:context=".activity.MainActivity"
-            tools:listitem="@layout/commit_item"/>
+            tools:listitem="@layout/user_event_item"/>
 </layout>

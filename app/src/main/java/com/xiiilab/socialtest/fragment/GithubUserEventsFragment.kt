@@ -7,26 +7,27 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.xiiilab.socialtest.R
-import com.xiiilab.socialtest.vm.GithubCommitListViewModel
+import com.xiiilab.socialtest.vm.GithubVmFactory
+import com.xiiilab.socialtest.vm.UserEventsListViewModel
 
 
-class GithubCommitFragment : Fragment() {
+class GithubUserEventsFragment : Fragment() {
 
     companion object {
-        fun newInstance() = GithubCommitFragment()
+        fun newInstance() = GithubUserEventsFragment()
     }
 
-    private lateinit var mListViewModel: GithubCommitListViewModel
+    private lateinit var mListViewModel: UserEventsListViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.github_commit_fragment, container, false)
+        return inflater.inflate(R.layout.github_user_events_fragment, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         // use shared vm
-        activity.let { mListViewModel = ViewModelProviders.of(this).get(GithubCommitListViewModel::class.java) }
+        activity.let { mListViewModel = ViewModelProviders.of(this, GithubVmFactory).get(UserEventsListViewModel::class.java) }
     }
 
 }

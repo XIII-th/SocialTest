@@ -10,20 +10,21 @@ import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.navigation.NavigationView
 import com.xiiilab.socialtest.R
-import com.xiiilab.socialtest.vm.GithubCommitListViewModel
+import com.xiiilab.socialtest.vm.GithubVmFactory
+import com.xiiilab.socialtest.vm.UserEventsListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    private lateinit var mListVm: GithubCommitListViewModel
+    private lateinit var mListVm: UserEventsListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        mListVm = ViewModelProviders.of(this)[GithubCommitListViewModel::class.java]
+        mListVm = ViewModelProviders.of(this, GithubVmFactory)[UserEventsListViewModel::class.java]
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)

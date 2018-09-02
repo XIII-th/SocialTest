@@ -8,22 +8,29 @@ import retrofit2.Retrofit
 /**
  * Created by XIII-th on 02.09.2018
  */
-private object ApiFactory {
+object ApiFactory {
 
-    fun <T : Class<T>> create(api : T, baseUrl : String, logTag : String) : T {
-        val logger = HttpLoggingInterceptor(HttpLoggingInterceptor.Logger {
-            Log.d(logTag, it)
-        })
-        logger.level = HttpLoggingInterceptor.Level.BASIC
+    private val mInstances: MutableMap<Class<*>, Any> = HashMap()
 
-        val client = OkHttpClient.Builder()
-                .addInterceptor(logger)
-                .build()
-        return Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .client(client)
-//                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(api::class.java)
+    fun <T> create(api: Class<T>, baseUrl: String, logTag: String): T {
+        synchronized(mInstances) {
+            if (!mInstances.containsKey(api)) {
+                val logger = HttpLoggingInterceptor(HttpLoggingInterceptor.Logger {
+                    Log.d(logTag, it)
+                })
+                logger.level = HttpLoggingInterceptor.Level.BASIC
+
+                val client = OkHttpClient.Builder()
+                        .addInterceptor(logger)
+                        .build()
+                mInstances[api] = Retrofit.Builder()
+                        .baseUrl(baseUrl)
+                        .client(client)
+//                      .addConverterFactory(GsonConverterFactory.create())
+                        .build()
+                        .create(api) as Any
+            }
+            return mInstances[api] as T
+        }
     }
 }

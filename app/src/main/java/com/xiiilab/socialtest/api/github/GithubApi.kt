@@ -1,0 +1,20 @@
+package com.xiiilab.socialtest.api.github
+
+import retrofit2.Call
+import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.Query
+
+/**
+ * Created by XIII-th on 02.09.2018
+ */
+interface GithubApi {
+
+    /**
+     * https://developer.github.com/v3/activity/events/#list-events-performed-by-a-user
+     * https://developer.github.com/v3/guides/traversing-with-pagination/#navigating-through-the-pages
+     */
+    @GET("/users/{username}/events")
+    fun getUserEvents(@Path("username") username: String, @Query("page") page: Int, @Query("per_page") count: Int):
+            Call<UserEvent>
+}

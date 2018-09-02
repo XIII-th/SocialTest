@@ -5,8 +5,8 @@
               android:layout_height="match_parent">
 
     <fragment
-            android:name="com.xiiilab.socialtest.fragment.GithubCommitFragment"
-            android:id="@+id/github_commit_list_fragment"
+            android:name="com.xiiilab.socialtest.fragment.GithubUserEventsFragment"
+            android:id="@+id/github_user_events_list_fragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
