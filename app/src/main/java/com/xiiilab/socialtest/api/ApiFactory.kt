@@ -4,6 +4,7 @@ import android.util.Log
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 /**
  * Created by XIII-th on 02.09.2018
@@ -26,7 +27,7 @@ object ApiFactory {
                 mInstances[api] = Retrofit.Builder()
                         .baseUrl(baseUrl)
                         .client(client)
-//                      .addConverterFactory(GsonConverterFactory.create())
+                        .addConverterFactory(GsonConverterFactory.create())
                         .build()
                         .create(api) as Any
             }

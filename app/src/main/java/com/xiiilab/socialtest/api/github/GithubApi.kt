@@ -15,6 +15,6 @@ interface GithubApi {
      * https://developer.github.com/v3/guides/traversing-with-pagination/#navigating-through-the-pages
      */
     @GET("/users/{username}/events")
-    fun getUserEvents(@Path("username") username: String, @Query("page") page: Int, @Query("per_page") count: Int):
-            Call<UserEvent>
+    fun getUserEvents(@Path("username") username: String, @Query("page") page: Int = 1, @Query("per_page") count: Int):
+            Call<List<UserEvent>>
 }
