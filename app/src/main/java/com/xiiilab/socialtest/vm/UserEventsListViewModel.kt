@@ -11,17 +11,16 @@ import io.reactivex.Flowable
 import io.reactivex.ObservableSource
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.subjects.BehaviorSubject
 import java.util.concurrent.TimeUnit
 
 class UserEventsListViewModel(private val api: GithubApi, private val config: PagedList.Config) : ViewModel() {
-    val mQuery : PublishSubject<String>
+    val mQuery: BehaviorSubject<String> = BehaviorSubject.create<String>()
     val mList: Flowable<PagedList<UserEvent>>
 
     init {
-        mQuery = PublishSubject.create<String>();
         mList = mQuery.
-                debounce(800, TimeUnit.MILLISECONDS).
+                debounce(800, TimeUnit.MILLISECONDS).map(String::trim).
                 filter(String::isNotEmpty).
                 distinctUntilChanged().
                 switchMap(this::newRequest).

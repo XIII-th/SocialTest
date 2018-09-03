@@ -19,11 +19,11 @@ class GithubUserEventsFragment : Fragment() {
     private val mDisposables = CompositeDisposable()
     private val mAdapter = UserEventsAdapter()
 
+    private lateinit var mListViewModel: UserEventsListViewModel
+
     companion object {
         fun newInstance() = GithubUserEventsFragment()
     }
-
-    private lateinit var mListViewModel: UserEventsListViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = DataBindingUtil.inflate<GithubUserEventsFragmentBinding>(

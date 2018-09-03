@@ -17,6 +17,10 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    private companion object {
+        const val KEY_LAST_QUERY = "com.xiiilab.socialtest.activity.MainActivity_LAST_QUERY"
+    }
+
     private lateinit var mListVm: UserEventsListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,13 +46,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        savedInstanceState.getString(KEY_LAST_QUERY)?.let { mListVm.mQuery.onNext(it) }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        mListVm.mQuery.value?.let { outState.putString(KEY_LAST_QUERY, it) }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
-        val searchItem = menu.findItem(R.id.action_search)
-        (searchItem.actionView as SearchView).setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        val searchMenuItem = menu.findItem(R.id.action_search)
+        val searchView = searchMenuItem.actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                mListVm.mQuery.onComplete();
+                mListVm.mQuery.onComplete()
                 return true
             }
 
@@ -56,19 +71,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 newText?.let { mListVm.mQuery.onNext(it) }
                 return true
             }
-
         })
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+        mListVm.mQuery.value?.takeIf(String::isNotEmpty)?.let {
+            // restore search view state https://stackoverflow.com/a/37305921/3926506
+            searchMenuItem.expandActionView()
+            searchView.setQuery(it, false)
         }
+        return true
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
