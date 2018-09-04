@@ -25,7 +25,7 @@ abstract class AbstractAuthStrategy {
         Log.d(TAG, "Initialisation of $javaClass")
     }
 
-    open fun checkAuth(): Boolean {
+    open fun checkAuth(context: Context): Boolean {
         Log.d(TAG, "Check auth for $javaClass")
         return false
     }

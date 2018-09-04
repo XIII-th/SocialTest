@@ -26,9 +26,8 @@ object VkAbstractAuthStrategy : AbstractAuthStrategy() {
         VKSdk.initialize(appContext);
     }
 
-    override fun checkAuth(): Boolean {
-        super.checkAuth()
-        return VKSdk.isLoggedIn()
+    override fun checkAuth(context: Context): Boolean {
+        return super.checkAuth(context) || VKSdk.isLoggedIn()
     }
 
     override fun startAuthFlow(activity: Activity) {

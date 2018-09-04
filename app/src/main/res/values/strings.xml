@@ -8,5 +8,6 @@
     <string name="loading">Loading…</string>
     <string name="action_search">Search</string>
     <string name="title_activity_login">Sign in</string>
-    <string name="vk_auth_button">Sign in Vk</string>
+    <string name="vk_auth_button">Sign in with Vk</string>
+    <string name="google_auth_button">Sign in with google</string>
 </resources>
