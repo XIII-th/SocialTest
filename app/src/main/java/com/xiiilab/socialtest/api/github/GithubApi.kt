@@ -1,5 +1,6 @@
 package com.xiiilab.socialtest.api.github
 
+import com.xiiilab.socialtest.api.ApiFactory
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -17,4 +18,9 @@ interface GithubApi {
     @GET("/users/{username}/events")
     fun getUserEvents(@Path("username") username: String, @Query("page") page: Int = 1, @Query("per_page") count: Int):
             Call<List<UserEvent>>
+
+    companion object {
+        private const val BASE_URL = "https://api.github.com"
+        fun get() = ApiFactory.create(GithubApi::class.java, BASE_URL, "GITHUB_API")
+    }
 }

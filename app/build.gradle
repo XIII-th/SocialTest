@@ -52,4 +52,7 @@ dependencies {
     // optional - RxJava support
     implementation "androidx.paging:paging-rxjava2:$arc_component_version"
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+
+    // auth api
+    implementation 'com.vk:androidsdk:1.6.9'
 }

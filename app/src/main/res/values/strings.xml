@@ -5,8 +5,8 @@
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
-
     <string name="loading">Loading…</string>
-
     <string name="action_search">Search</string>
+    <string name="title_activity_login">Sign in</string>
+    <string name="vk_auth_button">Sign in Vk</string>
 </resources>

@@ -19,8 +19,7 @@ class UserEventsListViewModel(private val api: GithubApi, private val config: Pa
     val mList: Flowable<PagedList<UserEvent>>
 
     init {
-        mList = mQuery.
-                debounce(800, TimeUnit.MILLISECONDS).map(String::trim).
+        mList = mQuery.debounce(800, TimeUnit.MILLISECONDS).map(String::trim).
                 filter(String::isNotEmpty).
                 distinctUntilChanged().
                 switchMap(this::newRequest).
