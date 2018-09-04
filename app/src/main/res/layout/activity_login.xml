@@ -10,7 +10,7 @@
 
         <Button
                 android:id="@+id/vk_sign_in_btn"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/vk_auth_button"
                 android:onClick="startAuthFlow"
@@ -23,7 +23,7 @@
 
         <Button
                 android:id="@+id/google_sign_in_button"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/google_auth_button"
                 android:onClick="startAuthFlow"
@@ -32,6 +32,19 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/vk_sign_in_btn"
+                app:layout_constraintVertical_bias="0.0"/>
+
+        <Button
+                android:id="@+id/fb_sign_in_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/fb_auth_button"
+                android:onClick="startAuthFlow"
+                android:layout_margin="@dimen/fab_margin"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/google_sign_in_button"
                 app:layout_constraintVertical_bias="0.0"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

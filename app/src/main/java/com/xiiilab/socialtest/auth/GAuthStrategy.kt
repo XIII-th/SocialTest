@@ -12,7 +12,7 @@ import com.xiiilab.socialtest.R
 /**
  * Created by XIII-th on 04.09.2018
  */
-object GAbstractAuthStrategy : AbstractAuthStrategy() {
+object GAuthStrategy : AbstractAuthStrategy() {
 
     private const val RC_SIGN_IN = 1
     private lateinit var mClient: GoogleSignInClient
@@ -41,8 +41,7 @@ object GAbstractAuthStrategy : AbstractAuthStrategy() {
             // a listener.
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             mAuthResult.onNext(if (task.isSuccessful) AuthResult.SUCCESS else AuthResult.error {
-                val message: String? = task?.exception?.message
-                if (message === null) "Unexpected message" else message
+                task?.exception?.message
             })
         }
     }

@@ -13,7 +13,7 @@ import com.vk.sdk.api.VKError
 /**
  * Created by XIII-th on 04.09.2018
  */
-object VkAbstractAuthStrategy : AbstractAuthStrategy() {
+object VkAuthStrategy : AbstractAuthStrategy() {
     private val accessTokenTracker = object : VKAccessTokenTracker() {
         override fun onVKAccessTokenChanged(oldToken: VKAccessToken?, newToken: VKAccessToken?) {
             Log.d(TAG, "Vk token changed to ${newToken?.accessToken}")
@@ -38,12 +38,12 @@ object VkAbstractAuthStrategy : AbstractAuthStrategy() {
     override fun onAuthFlowResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onAuthFlowResult(requestCode, resultCode, data)
         VKSdk.onActivityResult(requestCode, resultCode, data, object : VKCallback<VKAccessToken> {
-            override fun onResult(res: VKAccessToken) {
+            override fun onResult(res: VKAccessToken?) {
                 mAuthResult.onNext(AuthResult.SUCCESS)
             }
 
-            override fun onError(error: VKError) {
-                mAuthResult.onNext(AuthResult.error(error.errorMessage))
+            override fun onError(error: VKError?) {
+                mAuthResult.onNext(AuthResult.error{ error?.errorMessage })
             }
         })
     }

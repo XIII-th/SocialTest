@@ -56,6 +56,7 @@ dependencies {
     // auth api
     implementation 'com.vk:androidsdk:1.6.9'
     implementation 'com.google.android.gms:play-services-auth:16.0.0'
+    implementation 'com.facebook.android:facebook-login:4.36.0'
 }
 
 //apply plugin: 'com.google.gms.google-services'

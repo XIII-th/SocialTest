@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="com_vk_sdk_AppId">6681919</integer>
+
     <string name="google_access_token">662759586892</string>
+
+    <string name="facebook_app_id">2103553999896782</string>
+    <string name="fb_login_protocol_scheme">fb2103553999896782</string>
 </resources>

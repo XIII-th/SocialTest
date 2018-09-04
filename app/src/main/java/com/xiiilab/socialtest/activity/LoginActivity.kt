@@ -26,7 +26,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mDisposables.add(Observable.just(VkAbstractAuthStrategy, FbAbstractAuthStrategy, GAbstractAuthStrategy).
+        mDisposables.add(Observable.just(VkAuthStrategy, FbAuthStrategy, GAuthStrategy).
                 subscribeOn(Schedulers.io()).
                 map { strategy -> strategy.checkAuth(this) }.
                 observeOn(AndroidSchedulers.mainThread()).
@@ -48,8 +48,9 @@ class LoginActivity : AppCompatActivity() {
 
     fun startAuthFlow(view: View) {
         mAuthStrategy = when (view.id) {
-            R.id.vk_sign_in_btn -> VkAbstractAuthStrategy
-            R.id.google_sign_in_button -> GAbstractAuthStrategy
+            R.id.vk_sign_in_btn -> VkAuthStrategy
+            R.id.google_sign_in_button -> GAuthStrategy
+            R.id.fb_sign_in_button -> FbAuthStrategy
             else -> throw IllegalStateException("Unexpected view")
         }
         mDisposables.add(mAuthStrategy.subscribe(this::onAuthCompleted))
