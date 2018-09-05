@@ -8,40 +8,45 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProviders
-import com.google.android.material.navigation.NavigationView
 import com.xiiilab.socialtest.R
+import com.xiiilab.socialtest.auth.AbstractAuthStrategy
+import com.xiiilab.socialtest.auth.AuthServiceLocator
 import com.xiiilab.socialtest.vm.GithubVmFactory
 import com.xiiilab.socialtest.vm.UserEventsListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity() {
 
-    private companion object {
+    companion object {
         const val KEY_LAST_QUERY = "com.xiiilab.socialtest.activity.MainActivity_LAST_QUERY"
     }
 
     private lateinit var mListVm: UserEventsListViewModel
+    private lateinit var mAuthStrategy: AbstractAuthStrategy
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mListVm = ViewModelProviders.of(this, GithubVmFactory)[UserEventsListViewModel::class.java]
+
+        val strategyKey = intent?.getStringExtra(LoginActivity.KEY_SELECTED_AUTH_STRATEGY) ?:
+                throw IllegalStateException("Auth strategy key is absent")
+        mAuthStrategy = AuthServiceLocator[strategyKey]
+
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-
-        mListVm = ViewModelProviders.of(this, GithubVmFactory)[UserEventsListViewModel::class.java]
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
-
-        nav_view.setNavigationItemSelectedListener(this)
     }
 
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
             drawer_layout.closeDrawer(GravityCompat.START)
         } else {
+            onLogout(null)
             super.onBackPressed()
         }
     }
@@ -80,30 +85,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
-        when (item.itemId) {
-            R.id.nav_camera -> {
-                // Handle the camera action
-            }
-            R.id.nav_gallery -> {
-
-            }
-            R.id.nav_slideshow -> {
-
-            }
-            R.id.nav_manage -> {
-
-            }
-            R.id.nav_share -> {
-
-            }
-            R.id.nav_send -> {
-
-            }
-        }
-
+    fun onLogout(menuItem: MenuItem?) {
         drawer_layout.closeDrawer(GravityCompat.START)
-        return true
+        mAuthStrategy.logout()
+        finish()
     }
 }

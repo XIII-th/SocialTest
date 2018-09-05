@@ -20,18 +20,26 @@ import io.reactivex.schedulers.Schedulers
  */
 class LoginActivity : AppCompatActivity() {
 
+    companion object {
+        const val KEY_SELECTED_AUTH_STRATEGY = "com.xiiilab.socialtest.activity.LoginActivity_SELECTED_AUTH_STRATEGY"
+    }
+
     private lateinit var mAuthStrategy: AbstractAuthStrategy
     private val mDisposables = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mDisposables.add(Observable.just(VkAuthStrategy, FbAuthStrategy, GAuthStrategy).
+        // check user already signed in
+        mDisposables.add(Observable.fromArray(*AuthServiceLocator.getAll()).
                 subscribeOn(Schedulers.io()).
-                map { strategy -> strategy.checkAuth(this) }.
+                skipWhile { strategy -> !strategy.checkAuth(this) }.
+                firstElement().
                 observeOn(AndroidSchedulers.mainThread()).
-                skipWhile { !it }.
-                subscribe { _ -> onAuthCompleted(AuthResult.SUCCESS) })
+                subscribe { strategy ->
+                    mAuthStrategy = strategy
+                    onAuthCompleted(AuthResult.SUCCESS)
+                })
 
         setContentView(R.layout.activity_login)
     }
@@ -59,7 +67,11 @@ class LoginActivity : AppCompatActivity() {
 
     private fun onAuthCompleted(result: AuthResult) {
         when (result.state) {
-            SUCCESS -> startActivity(Intent(this, MainActivity::class.java))
+            SUCCESS -> {
+                val intent = Intent(this, MainActivity::class.java)
+                intent.putExtra(KEY_SELECTED_AUTH_STRATEGY, mAuthStrategy.key())
+                startActivity(intent)
+            }
             FAILED -> Toast.makeText(this, "Auth failed: ${result.error}", Toast.LENGTH_LONG).show()
         }
     }

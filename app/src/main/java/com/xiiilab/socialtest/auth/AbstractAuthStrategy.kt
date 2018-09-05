@@ -41,4 +41,7 @@ abstract class AbstractAuthStrategy {
     open fun logout() {
         Log.d(TAG, "Logout of $javaClass")
     }
+
+    // we can use class name because of all strategy implementations are singletons
+    open fun key() : String = javaClass.name
 }

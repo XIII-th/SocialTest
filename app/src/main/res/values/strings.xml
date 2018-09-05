@@ -11,4 +11,5 @@
     <string name="vk_auth_button">Sign in with Vkontakte</string>
     <string name="google_auth_button">Sign in with Google</string>
     <string name="fb_auth_button">Sign in with Facebook</string>
+    <string name="logout">Logout</string>
 </resources>

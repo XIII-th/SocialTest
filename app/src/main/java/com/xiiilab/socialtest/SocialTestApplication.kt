@@ -1,6 +1,7 @@
 package com.xiiilab.socialtest
 
 import android.app.Application
+import com.xiiilab.socialtest.auth.AuthServiceLocator
 import com.xiiilab.socialtest.auth.FbAuthStrategy
 import com.xiiilab.socialtest.auth.GAuthStrategy
 import com.xiiilab.socialtest.auth.VkAuthStrategy
@@ -12,8 +13,6 @@ class SocialTestApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        VkAuthStrategy.init(this)
-        FbAuthStrategy.init(this)
-        GAuthStrategy.init(this)
+        AuthServiceLocator.registerStrategies(this, VkAuthStrategy, GAuthStrategy, FbAuthStrategy)
     }
 }
