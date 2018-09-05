@@ -56,7 +56,7 @@ object VkAuthStrategy : AbstractAuthStrategy() {
             val info = if (it.response.size != 1)
                 throw IllegalStateException("Unexpected user info count ${it.response.size}")
                 else it.response[0]
-            UserInfo(info.first_name, info.last_name, info.photo_200)
-        } ?: throw Exception("User info vk request return empty response")
+            UserInfo(info.first_name, info.last_name)
+        } ?: throw Exception(getEmptyResponseErrorMessage("vk"))
     }
 }

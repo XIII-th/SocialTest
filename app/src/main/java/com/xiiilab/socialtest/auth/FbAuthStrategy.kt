@@ -9,12 +9,15 @@ import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
+import com.xiiilab.socialtest.api.fb.FbApi
 import java.util.*
 
 /**
  * Created by XIII-th on 04.09.2018
  */
 object FbAuthStrategy : AbstractAuthStrategy() {
+
+    private val mApi by lazy { FbApi.get() }
 
     private lateinit var mCallbackManager: CallbackManager
 
@@ -57,6 +60,9 @@ object FbAuthStrategy : AbstractAuthStrategy() {
     }
 
     override fun loadUserInfo(): UserInfo {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val token = AccessToken.getCurrentAccessToken()
+        val response = mApi.getUserInfo(token.userId, token.token).execute()
+        return response.body()?.let { UserInfo(it.first_name, it.last_name) } ?:
+                throw Exception(getEmptyResponseErrorMessage("fb"))
     }
 }

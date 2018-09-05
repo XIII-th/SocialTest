@@ -54,5 +54,7 @@ abstract class AbstractAuthStrategy {
                 observeOn(AndroidSchedulers.mainThread())
     }
 
+    protected fun getEmptyResponseErrorMessage(apiName: String) = "User info $apiName request return empty response"
+
     protected abstract fun loadUserInfo(): UserInfo
 }
