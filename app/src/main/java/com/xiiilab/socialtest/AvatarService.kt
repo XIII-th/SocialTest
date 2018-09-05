@@ -47,6 +47,7 @@ object AvatarService {
 
     private fun download(authService: AbstractAuthService): Maybe<String> {
         return Maybe.wrap(authService.avatarUrl()).map { stringUrl->
+            Log.d(authService.getServiceName(), "Start loading image from $stringUrl")
             val bitmap = Picasso.get().load(stringUrl).get()
             val file = getCacheFile(authService.getServiceName())
             file.outputStream().use { bitmap.compress(COMPRESSION_FORMAT, 100, it) }

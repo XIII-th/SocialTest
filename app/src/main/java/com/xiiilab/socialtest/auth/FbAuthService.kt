@@ -71,7 +71,7 @@ object FbAuthService : AbstractAuthService() {
         return Maybe.fromCallable {
             val token = AccessToken.getCurrentAccessToken()
             val response = mApi.getUserAvatar(token.userId, token.token).execute()
-            response.body()?.url
+            response.body()?.data?.url
         }
     }
 

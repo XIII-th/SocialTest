@@ -11,6 +11,8 @@ object AuthServiceLocator {
 
     fun registerStrategies(appContext: Context, vararg services: AbstractAuthService) {
         for (strategy in services) {
+            if (mServicesMap.containsKey(strategy.getServiceName()))
+                throw IllegalArgumentException("Duplication of service name ${strategy.getServiceName()}")
             mServicesMap[strategy.getServiceName()] = strategy
             strategy.init(appContext)
         }

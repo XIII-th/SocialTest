@@ -20,15 +20,15 @@ class UserInfoViewModel : ViewModel() {
 
     @MainThread
     fun init(authService: AbstractAuthService) {
-        mFirstName.value = ""
-        mLastName.value = ""
         if (mAuthService === null) {
+            mFirstName.value = ""
+            mLastName.value = ""
             mAuthService = authService
             mDisposables.add(authService.userInfo().subscribe { userInfo ->
                 mFirstName.value = userInfo.firstName
                 mLastName.value = userInfo.lastName
             })
-            mDisposables.add(AvatarService.getAvatarPath(authService).subscribe(System.out::println))
+            mDisposables.add(AvatarService.getAvatarPath(authService).subscribe(mAvatarPath::setValue))
         } else if (authService != mAuthService)
             throw IllegalArgumentException("Switching of auth strategies is not supported")
     }

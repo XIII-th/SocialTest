@@ -6,7 +6,6 @@ import android.content.Intent
 import android.util.Log
 import com.xiiilab.socialtest.AvatarService
 import io.reactivex.Maybe
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -48,8 +47,9 @@ abstract class AbstractAuthService {
         AvatarService.removeAvatar(getServiceName())
     }
 
-    fun userInfo(): Observable<UserInfo> {
-        return Observable.fromCallable { loadUserInfo() }.
+    fun userInfo(): Maybe<UserInfo> {
+        // TODO: Cache user info
+        return Maybe.fromCallable { loadUserInfo() }.
                 subscribeOn(Schedulers.io()).
                 observeOn(AndroidSchedulers.mainThread())
     }
