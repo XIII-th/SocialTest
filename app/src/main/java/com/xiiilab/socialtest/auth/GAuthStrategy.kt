@@ -33,7 +33,7 @@ object GAuthStrategy : AbstractAuthStrategy() {
         activity.startActivityForResult(mClient.signInIntent, RC_SIGN_IN)
     }
 
-    override fun onAuthFlowResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onAuthFlowResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onAuthFlowResult(requestCode, resultCode, data)
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {

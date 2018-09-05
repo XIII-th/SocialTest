@@ -34,7 +34,7 @@ abstract class AbstractAuthStrategy {
         Log.d(TAG, "Start auth flow of $javaClass")
     }
 
-    open fun onAuthFlowResult(requestCode: Int, resultCode: Int, data: Intent) {
+    open fun onAuthFlowResult(requestCode: Int, resultCode: Int, data: Intent?) {
         Log.d(TAG, "Completion of auth flow for $javaClass")
     }
 

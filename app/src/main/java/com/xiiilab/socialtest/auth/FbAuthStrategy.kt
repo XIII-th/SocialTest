@@ -46,7 +46,7 @@ object FbAuthStrategy : AbstractAuthStrategy() {
         LoginManager.getInstance().logInWithReadPermissions(activity, Collections.singleton("public_profile"))
     }
 
-    override fun onAuthFlowResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onAuthFlowResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onAuthFlowResult(requestCode, resultCode, data)
         mCallbackManager.onActivityResult(requestCode, resultCode, data)
     }

@@ -29,9 +29,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         mListVm = ViewModelProviders.of(this, GithubVmFactory)[UserEventsListViewModel::class.java]
 
-        val strategyKey = intent?.getStringExtra(LoginActivity.KEY_SELECTED_AUTH_STRATEGY) ?:
-                throw IllegalStateException("Auth strategy key is absent")
-        mAuthStrategy = AuthServiceLocator[strategyKey]
+        mAuthStrategy = getAuthStrategy(intent?.extras)
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
@@ -54,11 +52,13 @@ class MainActivity : AppCompatActivity() {
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         savedInstanceState.getString(KEY_LAST_QUERY)?.let { mListVm.mQuery.onNext(it) }
+        mAuthStrategy = getAuthStrategy(savedInstanceState)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         mListVm.mQuery.value?.let { outState.putString(KEY_LAST_QUERY, it) }
+        outState.putString(LoginActivity.KEY_SELECTED_AUTH_STRATEGY, mAuthStrategy.key())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -85,9 +85,15 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    fun onLogout(menuItem: MenuItem?) {
+    fun onLogout(@Suppress("UNUSED_PARAMETER") menuItem: MenuItem?) {
         drawer_layout.closeDrawer(GravityCompat.START)
         mAuthStrategy.logout()
         finish()
+    }
+
+    private fun getAuthStrategy(bundle: Bundle?): AbstractAuthStrategy {
+        val strategyKey = bundle?.getString(LoginActivity.KEY_SELECTED_AUTH_STRATEGY)
+                ?: throw IllegalStateException("Auth strategy key is absent")
+        return AuthServiceLocator[strategyKey]
     }
 }

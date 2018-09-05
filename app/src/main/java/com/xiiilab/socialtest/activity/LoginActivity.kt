@@ -45,7 +45,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        data?.let { mAuthStrategy.onAuthFlowResult(requestCode, resultCode, it) }
+        mAuthStrategy.onAuthFlowResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
     }
 
