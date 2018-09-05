@@ -55,4 +55,8 @@ object FbAuthStrategy : AbstractAuthStrategy() {
         super.logout()
         LoginManager.getInstance().logOut()
     }
+
+    override fun loadUserInfo(): UserInfo {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }

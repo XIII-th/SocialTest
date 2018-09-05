@@ -11,8 +11,10 @@ import androidx.lifecycle.ViewModelProviders
 import com.xiiilab.socialtest.R
 import com.xiiilab.socialtest.auth.AbstractAuthStrategy
 import com.xiiilab.socialtest.auth.AuthServiceLocator
+import com.xiiilab.socialtest.databinding.NavHeaderMainBinding
 import com.xiiilab.socialtest.vm.GithubVmFactory
 import com.xiiilab.socialtest.vm.UserEventsListViewModel
+import com.xiiilab.socialtest.vm.UserInfoViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
@@ -38,6 +40,13 @@ class MainActivity : AppCompatActivity() {
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
+
+        val binding = NavHeaderMainBinding.inflate(layoutInflater).
+                apply { setLifecycleOwner(this@MainActivity) }
+        ViewModelProviders.of(this)[UserInfoViewModel::class.java].
+                apply { init(mAuthStrategy) }.
+                also { binding.userInfoVm = it }
+        nav_view.addHeaderView(binding.root)
     }
 
     override fun onBackPressed() {

@@ -50,4 +50,8 @@ object GAuthStrategy : AbstractAuthStrategy() {
         super.logout()
         mClient.signOut()
     }
+
+    override fun loadUserInfo(): UserInfo {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }

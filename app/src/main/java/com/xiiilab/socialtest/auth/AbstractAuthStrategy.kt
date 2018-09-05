@@ -4,7 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 
 /**
@@ -44,4 +47,12 @@ abstract class AbstractAuthStrategy {
 
     // we can use class name because of all strategy implementations are singletons
     open fun key() : String = javaClass.name
+
+    fun userInfo(): Observable<UserInfo> {
+        return Observable.fromCallable { loadUserInfo() }.
+                subscribeOn(Schedulers.io()).
+                observeOn(AndroidSchedulers.mainThread())
+    }
+
+    protected abstract fun loadUserInfo(): UserInfo
 }

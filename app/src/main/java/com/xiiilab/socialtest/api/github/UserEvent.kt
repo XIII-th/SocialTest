@@ -1,6 +1,6 @@
 package com.xiiilab.socialtest.api.github
 
-data class UserEvent constructor(val id: Long, val type: String) {
+data class UserEvent(val id: Long, val type: String) {
 
     override fun equals(other: Any?): Boolean {
         return other is UserEvent && other.id == id && other.type == type
