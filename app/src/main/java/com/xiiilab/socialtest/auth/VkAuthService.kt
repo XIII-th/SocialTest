@@ -8,11 +8,13 @@ import com.vk.sdk.VKCallback
 import com.vk.sdk.VKSdk
 import com.vk.sdk.api.VKError
 import com.xiiilab.socialtest.api.vk.VkApi
+import com.xiiilab.socialtest.api.vk.VkUser
+import io.reactivex.Maybe
 
 /**
  * Created by XIII-th on 04.09.2018
  */
-object VkAuthStrategy : AbstractAuthStrategy() {
+object VkAuthService : AbstractAuthService() {
 
     private val mApi by lazy { VkApi.get() }
 
@@ -48,15 +50,21 @@ object VkAuthStrategy : AbstractAuthStrategy() {
         VKSdk.logout()
     }
 
-    override fun loadUserInfo(): UserInfo {
+    override fun loadUserInfo() = loadUserInfo { info -> UserInfo(info.first_name, info.last_name) }
+
+    override fun avatarUrl(): Maybe<String> = Maybe.fromCallable { loadUserInfo(VkUser::photo_200) }
+
+    override fun getServiceName(): String = "VK$SERVICE_NAME_SUFFIX"
+
+    private fun <T> loadUserInfo(func: (VkUser) -> T): T {
         val token = VKAccessToken.currentToken()
         val response = mApi.getUserInfo(token.userId, token.accessToken).execute()
 
         return response.body()?.let {
             val info = if (it.response.size != 1)
                 throw IllegalStateException("Unexpected user info count ${it.response.size}")
-                else it.response[0]
-            UserInfo(info.first_name, info.last_name)
+            else it.response[0]
+            func.invoke(info)
         } ?: throw Exception(getEmptyResponseErrorMessage("vk"))
     }
 }

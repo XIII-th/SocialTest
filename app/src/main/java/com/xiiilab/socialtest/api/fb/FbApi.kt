@@ -17,6 +17,9 @@ interface FbApi {
     @GET("/v3.1/{user_id}?fields=first_name,last_name")
     fun getUserInfo(@Path("user_id") userId: String, @Query("access_token") token: String): Call<FbUser>
 
+    @GET("/v3.1/{user_id}/picture?type=square&redirect=false")
+    fun getUserAvatar(@Path("user_id") userId: String, @Query("access_token") token: String): Call<FbImageData>
+
     companion object {
         private const val BASE_URL = "https://graph.facebook.com/"
         fun get() = ApiFactory.create(FbApi::class.java, BASE_URL, "FB_API")

@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import com.xiiilab.socialtest.AvatarService
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -13,9 +15,9 @@ import io.reactivex.subjects.PublishSubject
 /**
  * Created by XIII-th on 04.09.2018
  */
-abstract class AbstractAuthStrategy {
+abstract class AbstractAuthService {
     protected companion object {
-        const val TAG = "AUTH_STRATEGY"
+        const val SERVICE_NAME_SUFFIX = "_AUTH_SERVICE"
     }
 
     protected val mAuthResult: PublishSubject<AuthResult> = PublishSubject.create()
@@ -25,34 +27,36 @@ abstract class AbstractAuthStrategy {
     }
 
     open fun init(appContext: Context) {
-        Log.d(TAG, "Initialisation of $javaClass")
+        Log.d(getServiceName(), "Initialisation of $javaClass")
     }
 
     open fun checkAuth(context: Context): Boolean {
-        Log.d(TAG, "Check auth for $javaClass")
+        Log.d(getServiceName(), "Check auth for $javaClass")
         return false
     }
 
     open fun startAuthFlow(activity: Activity) {
-        Log.d(TAG, "Start auth flow of $javaClass")
+        Log.d(getServiceName(), "Start auth flow of $javaClass")
     }
 
     open fun onAuthFlowResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        Log.d(TAG, "Completion of auth flow for $javaClass")
+        Log.d(getServiceName(), "Completion of auth flow for $javaClass")
     }
 
     open fun logout() {
-        Log.d(TAG, "Logout of $javaClass")
+        Log.d(getServiceName(), "Logout of $javaClass")
+        AvatarService.removeAvatar(getServiceName())
     }
-
-    // we can use class name because of all strategy implementations are singletons
-    open fun key() : String = javaClass.name
 
     fun userInfo(): Observable<UserInfo> {
         return Observable.fromCallable { loadUserInfo() }.
                 subscribeOn(Schedulers.io()).
                 observeOn(AndroidSchedulers.mainThread())
     }
+
+    abstract fun avatarUrl(): Maybe<String>
+
+    abstract fun getServiceName(): String
 
     protected fun getEmptyResponseErrorMessage(apiName: String) = "User info $apiName request return empty response"
 

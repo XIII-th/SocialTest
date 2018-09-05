@@ -10,12 +10,13 @@ import com.facebook.FacebookException
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.xiiilab.socialtest.api.fb.FbApi
+import io.reactivex.Maybe
 import java.util.*
 
 /**
  * Created by XIII-th on 04.09.2018
  */
-object FbAuthStrategy : AbstractAuthStrategy() {
+object FbAuthService : AbstractAuthService() {
 
     private val mApi by lazy { FbApi.get() }
 
@@ -65,4 +66,14 @@ object FbAuthStrategy : AbstractAuthStrategy() {
         return response.body()?.let { UserInfo(it.first_name, it.last_name) } ?:
                 throw Exception(getEmptyResponseErrorMessage("fb"))
     }
+
+    override fun avatarUrl(): Maybe<String> {
+        return Maybe.fromCallable {
+            val token = AccessToken.getCurrentAccessToken()
+            val response = mApi.getUserAvatar(token.userId, token.token).execute()
+            response.body()?.url
+        }
+    }
+
+    override fun getServiceName(): String = "FB$SERVICE_NAME_SUFFIX"
 }

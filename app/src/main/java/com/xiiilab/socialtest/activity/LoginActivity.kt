@@ -24,7 +24,7 @@ class LoginActivity : AppCompatActivity() {
         const val KEY_SELECTED_AUTH_STRATEGY = "com.xiiilab.socialtest.activity.LoginActivity_SELECTED_AUTH_STRATEGY"
     }
 
-    private lateinit var mAuthStrategy: AbstractAuthStrategy
+    private lateinit var mAuthService: AbstractAuthService
     private val mDisposables = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +37,7 @@ class LoginActivity : AppCompatActivity() {
                 firstElement().
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribe { strategy ->
-                    mAuthStrategy = strategy
+                    mAuthService = strategy
                     onAuthCompleted(AuthResult.SUCCESS)
                 })
 
@@ -45,7 +45,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        mAuthStrategy.onAuthFlowResult(requestCode, resultCode, data)
+        mAuthService.onAuthFlowResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
     }
 
@@ -55,21 +55,21 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun startAuthFlow(view: View) {
-        mAuthStrategy = when (view.id) {
-            R.id.vk_sign_in_btn -> VkAuthStrategy
-            R.id.google_sign_in_button -> GAuthStrategy
-            R.id.fb_sign_in_button -> FbAuthStrategy
+        mAuthService = when (view.id) {
+            R.id.vk_sign_in_btn -> VkAuthService
+            R.id.google_sign_in_button -> GAuthService
+            R.id.fb_sign_in_button -> FbAuthService
             else -> throw IllegalStateException("Unexpected view")
         }
-        mDisposables.add(mAuthStrategy.subscribe(this::onAuthCompleted))
-        mAuthStrategy.startAuthFlow(this)
+        mDisposables.add(mAuthService.subscribe(this::onAuthCompleted))
+        mAuthService.startAuthFlow(this)
     }
 
     private fun onAuthCompleted(result: AuthResult) {
         when (result.state) {
             SUCCESS -> {
                 val intent = Intent(this, MainActivity::class.java)
-                intent.putExtra(KEY_SELECTED_AUTH_STRATEGY, mAuthStrategy.key())
+                intent.putExtra(KEY_SELECTED_AUTH_STRATEGY, mAuthService.getServiceName())
                 startActivity(intent)
             }
             FAILED -> Toast.makeText(this, "Auth failed: ${result.error}", Toast.LENGTH_LONG).show()

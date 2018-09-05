@@ -7,12 +7,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.xiiilab.socialtest.R
+import io.reactivex.Maybe
 
 
 /**
  * Created by XIII-th on 04.09.2018
  */
-object GAuthStrategy : AbstractAuthStrategy() {
+object GAuthService : AbstractAuthService() {
 
     private const val RC_SIGN_IN = 1
     private lateinit var mClient: GoogleSignInClient
@@ -54,4 +55,10 @@ object GAuthStrategy : AbstractAuthStrategy() {
     override fun loadUserInfo(): UserInfo {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
+    override fun avatarUrl(): Maybe<String> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getServiceName(): String = "GOOGLE$SERVICE_NAME_SUFFIX"
 }

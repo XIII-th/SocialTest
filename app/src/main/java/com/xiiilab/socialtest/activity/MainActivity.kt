@@ -9,7 +9,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProviders
 import com.xiiilab.socialtest.R
-import com.xiiilab.socialtest.auth.AbstractAuthStrategy
+import com.xiiilab.socialtest.auth.AbstractAuthService
 import com.xiiilab.socialtest.auth.AuthServiceLocator
 import com.xiiilab.socialtest.databinding.NavHeaderMainBinding
 import com.xiiilab.socialtest.vm.GithubVmFactory
@@ -25,13 +25,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var mListVm: UserEventsListViewModel
-    private lateinit var mAuthStrategy: AbstractAuthStrategy
+    private lateinit var mAuthService: AbstractAuthService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mListVm = ViewModelProviders.of(this, GithubVmFactory)[UserEventsListViewModel::class.java]
 
-        mAuthStrategy = getAuthStrategy(intent?.extras)
+        mAuthService = getAuthStrategy(intent?.extras)
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         val binding = NavHeaderMainBinding.inflate(layoutInflater).
                 apply { setLifecycleOwner(this@MainActivity) }
         ViewModelProviders.of(this)[UserInfoViewModel::class.java].
-                apply { init(mAuthStrategy) }.
+                apply { init(mAuthService) }.
                 also { binding.userInfoVm = it }
         nav_view.addHeaderView(binding.root)
     }
@@ -61,13 +61,13 @@ class MainActivity : AppCompatActivity() {
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         savedInstanceState.getString(KEY_LAST_QUERY)?.let { mListVm.mQuery.onNext(it) }
-        mAuthStrategy = getAuthStrategy(savedInstanceState)
+        mAuthService = getAuthStrategy(savedInstanceState)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         mListVm.mQuery.value?.let { outState.putString(KEY_LAST_QUERY, it) }
-        outState.putString(LoginActivity.KEY_SELECTED_AUTH_STRATEGY, mAuthStrategy.key())
+        outState.putString(LoginActivity.KEY_SELECTED_AUTH_STRATEGY, mAuthService.getServiceName())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -96,11 +96,11 @@ class MainActivity : AppCompatActivity() {
 
     fun onLogout(@Suppress("UNUSED_PARAMETER") menuItem: MenuItem?) {
         drawer_layout.closeDrawer(GravityCompat.START)
-        mAuthStrategy.logout()
+        mAuthService.logout()
         finish()
     }
 
-    private fun getAuthStrategy(bundle: Bundle?): AbstractAuthStrategy {
+    private fun getAuthStrategy(bundle: Bundle?): AbstractAuthService {
         val strategyKey = bundle?.getString(LoginActivity.KEY_SELECTED_AUTH_STRATEGY)
                 ?: throw IllegalStateException("Auth strategy key is absent")
         return AuthServiceLocator[strategyKey]
