@@ -2,17 +2,21 @@ package com.xiiilab.socialtest.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.xiiilab.socialtest.R
-import com.xiiilab.socialtest.auth.*
-import com.xiiilab.socialtest.auth.AuthState.FAILED
-import com.xiiilab.socialtest.auth.AuthState.SUCCESS
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
+import com.xiiilab.socialtest.auth.AuthResult
+import com.xiiilab.socialtest.auth.AuthState.*
+import com.xiiilab.socialtest.auth.FbAuthService
+import com.xiiilab.socialtest.auth.GAuthService
+import com.xiiilab.socialtest.auth.VkAuthService
+import com.xiiilab.socialtest.databinding.ActivityLoginBinding
+import com.xiiilab.socialtest.vm.LoginViewModel
 
 
 /**
@@ -21,58 +25,47 @@ import io.reactivex.schedulers.Schedulers
 class LoginActivity : AppCompatActivity() {
 
     companion object {
+        private const val TAG = "AUTH_ACTIVITY"
         const val KEY_SELECTED_AUTH_STRATEGY = "com.xiiilab.socialtest.activity.LoginActivity_SELECTED_AUTH_STRATEGY"
     }
 
-    private lateinit var mAuthService: AbstractAuthService
-    private val mDisposables = CompositeDisposable()
+    private val mViewModel: LoginViewModel by lazy { ViewModelProviders.of(this)[LoginViewModel::class.java] }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // check user already signed in
-        mDisposables.add(Observable.fromArray(*AuthServiceLocator.getAll()).
-                subscribeOn(Schedulers.io()).
-                skipWhile { strategy -> !strategy.checkAuth(this) }.
-                firstElement().
-                observeOn(AndroidSchedulers.mainThread()).
-                subscribe { strategy ->
-                    mAuthService = strategy
-                    onAuthCompleted(AuthResult.SUCCESS)
-                })
+        mViewModel.getAuthResult().observe(this, Observer { onAuthCompleted(it) })
 
-        setContentView(R.layout.activity_login)
+        DataBindingUtil.setContentView<ActivityLoginBinding>(this, R.layout.activity_login)
+                .apply { loginVm = mViewModel }
+                .setLifecycleOwner(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        mAuthService.onAuthFlowResult(requestCode, resultCode, data)
+        mViewModel.onAuthFlowResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    override fun onStop() {
-        super.onStop()
-        mDisposables.clear()
-    }
-
     fun startAuthFlow(view: View) {
-        mAuthService = when (view.id) {
+        mViewModel.authWith(this, when (view.id) {
             R.id.vk_sign_in_btn -> VkAuthService
             R.id.google_sign_in_button -> GAuthService
             R.id.fb_sign_in_button -> FbAuthService
             else -> throw IllegalStateException("Unexpected view")
-        }
-        mDisposables.add(mAuthService.subscribe(this::onAuthCompleted))
-        mAuthService.startAuthFlow(this)
+        })
     }
 
-    private fun onAuthCompleted(result: AuthResult) {
-        when (result.state) {
+    private fun onAuthCompleted(result: AuthResult?) {
+        when (result?.state) {
             SUCCESS -> {
                 val intent = Intent(this, MainActivity::class.java)
-                intent.putExtra(KEY_SELECTED_AUTH_STRATEGY, mAuthService.getServiceName())
+                intent.putExtra(KEY_SELECTED_AUTH_STRATEGY, mViewModel.getServiceName())
                 startActivity(intent)
+                // FIXME: think about better solution for automatically clearing view model state and subscription
+                mViewModel.onCleared()
             }
             FAILED -> Toast.makeText(this, "Auth failed: ${result.error}", Toast.LENGTH_LONG).show()
+            CANCEL -> Log.d(TAG, "User cancel auth flow")
         }
     }
 }

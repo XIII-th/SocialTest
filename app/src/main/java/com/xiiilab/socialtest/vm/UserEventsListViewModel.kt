@@ -19,16 +19,17 @@ class UserEventsListViewModel(private val api: GithubApi, private val config: Pa
     val mList: Flowable<PagedList<UserEvent>>
 
     init {
-        mList = mQuery.debounce(800, TimeUnit.MILLISECONDS).map(String::trim).
-                filter(String::isNotEmpty).
-                distinctUntilChanged().
-                switchMap(this::newRequest).
-                subscribeOn(Schedulers.io()).
-                observeOn(AndroidSchedulers.mainThread()).
-                toFlowable(BackpressureStrategy.LATEST)
+        mList = mQuery.debounce(800, TimeUnit.MILLISECONDS)
+                .map(String::trim)
+                .filter(String::isNotEmpty)
+                .distinctUntilChanged()
+                .switchMap(this::newRequest)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .toFlowable(BackpressureStrategy.LATEST)
     }
 
-    private fun newRequest(query: String) : ObservableSource<PagedList<UserEvent>> {
+    private fun newRequest(query: String): ObservableSource<PagedList<UserEvent>> {
         return RxPagedListBuilder(UserEventDataSourceFactory(query, api), config).buildObservable()
     }
 }

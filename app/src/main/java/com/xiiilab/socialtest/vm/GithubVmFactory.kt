@@ -12,11 +12,11 @@ object GithubVmFactory : ViewModelProvider.Factory {
     private const val PAGE_SIZE = 30
 
     private val mGithubApi = GithubApi.get()
-    private val mPagingConfig = PagedList.Config.Builder().
-            setPageSize(PAGE_SIZE).
-            setPrefetchDistance(PAGE_SIZE * 2).
-            setEnablePlaceholders(true).
-            build()
+    private val mPagingConfig = PagedList.Config.Builder()
+            .setPageSize(PAGE_SIZE)
+            .setPrefetchDistance(PAGE_SIZE * 2)
+            .setEnablePlaceholders(true)
+            .build()
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return if (modelClass === UserEventsListViewModel::class.java)

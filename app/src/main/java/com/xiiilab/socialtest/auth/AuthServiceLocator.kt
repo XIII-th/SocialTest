@@ -9,17 +9,17 @@ object AuthServiceLocator {
 
     private val mServicesMap: MutableMap<String, AbstractAuthService> = HashMap()
 
-    fun registerStrategies(appContext: Context, vararg services: AbstractAuthService) {
-        for (strategy in services) {
-            if (mServicesMap.containsKey(strategy.getServiceName()))
-                throw IllegalArgumentException("Duplication of service name ${strategy.getServiceName()}")
-            mServicesMap[strategy.getServiceName()] = strategy
-            strategy.init(appContext)
+    fun registerServices(appContext: Context, vararg services: AbstractAuthService) {
+        for (authService in services) {
+            if (mServicesMap.containsKey(authService.getServiceName()))
+                throw IllegalArgumentException("Duplication of service name ${authService.getServiceName()}")
+            mServicesMap[authService.getServiceName()] = authService
+            authService.init(appContext)
         }
     }
 
-    operator fun get(serviceName: String): AbstractAuthService = mServicesMap[serviceName] ?:
-        throw IllegalArgumentException("Auth strategy for key $serviceName is not registered")
+    operator fun get(serviceName: String): AbstractAuthService = mServicesMap[serviceName]
+            ?: throw IllegalArgumentException("Auth service for key $serviceName is not registered")
 
     fun getAll(): Array<AbstractAuthService> = mServicesMap.values.toTypedArray()
 }

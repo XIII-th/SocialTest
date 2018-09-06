@@ -41,11 +41,11 @@ class MainActivity : AppCompatActivity() {
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
 
-        val binding = NavHeaderMainBinding.inflate(layoutInflater).
-                apply { setLifecycleOwner(this@MainActivity) }
-        ViewModelProviders.of(this)[UserInfoViewModel::class.java].
-                apply { init(mAuthService) }.
-                also { binding.userInfoVm = it }
+        val binding = NavHeaderMainBinding.inflate(layoutInflater)
+                .apply { setLifecycleOwner(this@MainActivity) }
+        ViewModelProviders.of(this)[UserInfoViewModel::class.java]
+                .apply { init(mAuthService) }
+                .also { binding.userInfoVm = it }
         nav_view.addHeaderView(binding.root)
     }
 

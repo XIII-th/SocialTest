@@ -19,26 +19,28 @@ import java.util.concurrent.TimeUnit
 object AvatarService {
 
     private val COMPRESSION_FORMAT = Bitmap.CompressFormat.PNG
-    private lateinit var mCacheDir : File
+    private lateinit var mCacheDir: File
 
     fun init(appContext: Context) {
         mCacheDir = appContext.cacheDir
     }
 
     fun getAvatarPath(authService: AbstractAuthService): Maybe<String> {
-        return getCachedImagePath(authService.getServiceName()).
-                switchIfEmpty(download(authService)).
-                subscribeOn(Schedulers.io()).
-                observeOn(AndroidSchedulers.mainThread())
+        return getCachedImagePath(authService.getServiceName())
+                .switchIfEmpty(download(authService))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun removeAvatar(serviceName: String) {
-        Single.fromCallable { getCacheFile(serviceName).delete() }.
+        Single.fromCallable { getCacheFile(serviceName).delete() }
                 // waiting for cancellation of downloading task
-                delay(1, TimeUnit.SECONDS).
-                subscribeOn(Schedulers.io()).
-                subscribe{ result -> Log.d(serviceName, "Avatar file " +
-                        if (result) "successfully deleted" else "not deleted")}
+                .delay(1, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .subscribe { result ->
+                    Log.d(serviceName, "Avatar file " +
+                            if (result) "successfully deleted" else "not deleted")
+                }
     }
 
     private fun getCachedImagePath(serviceName: String): Maybe<String> {
@@ -46,7 +48,7 @@ object AvatarService {
     }
 
     private fun download(authService: AbstractAuthService): Maybe<String> {
-        return Maybe.wrap(authService.avatarUrl()).map { stringUrl->
+        return Maybe.wrap(authService.avatarUrl()).map { stringUrl ->
             Log.d(authService.getServiceName(), "Start loading image from $stringUrl")
             val bitmap = Picasso.get().load(stringUrl).get()
             val file = getCacheFile(authService.getServiceName())
@@ -54,6 +56,7 @@ object AvatarService {
             file.takeIf(File::exists)?.let(File::getAbsolutePath)
         }
     }
+
     private fun getCacheFile(serviceName: String): File {
         val avatarDir = File(mCacheDir, "avatars")
         if (!avatarDir.exists() && !avatarDir.mkdirs())

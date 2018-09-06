@@ -5,5 +5,6 @@ package com.xiiilab.socialtest.auth
  */
 enum class AuthState {
     SUCCESS,
-    FAILED
+    FAILED,
+    CANCEL
 }

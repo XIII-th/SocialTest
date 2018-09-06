@@ -31,11 +31,11 @@ object FbAuthService : AbstractAuthService() {
             }
 
             override fun onCancel() {
-                // do nothing
+                mAuthResult.onNext(AuthResult.CANCEL)
             }
 
             override fun onError(error: FacebookException?) {
-                mAuthResult.onNext(AuthResult.error{ error?.message })
+                mAuthResult.onNext(AuthResult.error { error?.message })
             }
         })
     }
@@ -60,11 +60,12 @@ object FbAuthService : AbstractAuthService() {
         LoginManager.getInstance().logOut()
     }
 
-    override fun loadUserInfo(): UserInfo {
-        val token = AccessToken.getCurrentAccessToken()
-        val response = mApi.getUserInfo(token.userId, token.token).execute()
-        return response.body()?.let { UserInfo(it.first_name, it.last_name) } ?:
-                throw Exception(getEmptyResponseErrorMessage("fb"))
+    override fun loadUserInfo(): UserInfo? {
+        return AccessToken.getCurrentAccessToken()?.run {
+            val response = mApi.getUserInfo(userId, token).execute()
+            response.body()?.let { UserInfo(it.first_name, it.last_name) }
+                    ?: throw Exception(getEmptyResponseErrorMessage("fb"))
+        }
     }
 
     override fun avatarUrl(): Maybe<String> {

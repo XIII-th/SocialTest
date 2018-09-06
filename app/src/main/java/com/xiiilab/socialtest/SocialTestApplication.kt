@@ -13,7 +13,7 @@ class SocialTestApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        AuthServiceLocator.registerStrategies(this, VkAuthService, GAuthService, FbAuthService)
+        AuthServiceLocator.registerServices(this, VkAuthService, GAuthService, FbAuthService)
         AvatarService.init(this)
     }
 }

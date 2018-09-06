@@ -40,7 +40,9 @@ object VkAuthService : AbstractAuthService() {
             }
 
             override fun onError(error: VKError?) {
-                mAuthResult.onNext(AuthResult.error{ error?.errorMessage })
+                mAuthResult.onNext(
+                        if (error?.errorCode == VKError.VK_CANCELED) AuthResult.CANCEL
+                        else AuthResult.error { error?.errorMessage })
             }
         })
     }
@@ -50,21 +52,22 @@ object VkAuthService : AbstractAuthService() {
         VKSdk.logout()
     }
 
-    override fun loadUserInfo() = loadUserInfo { info -> UserInfo(info.first_name, info.last_name) }
+    override fun loadUserInfo(): UserInfo? = loadUserInfo { info -> UserInfo(info.first_name, info.last_name) }
 
     override fun avatarUrl(): Maybe<String> = Maybe.fromCallable { loadUserInfo(VkUser::photo_200) }
 
     override fun getServiceName(): String = "VK$SERVICE_NAME_SUFFIX"
 
-    private fun <T> loadUserInfo(func: (VkUser) -> T): T {
-        val token = VKAccessToken.currentToken()
-        val response = mApi.getUserInfo(token.userId, token.accessToken).execute()
+    private fun <T> loadUserInfo(func: (VkUser) -> T?): T? {
+        return VKAccessToken.currentToken()?.run {
+            val response = mApi.getUserInfo(userId, accessToken).execute()
 
-        return response.body()?.let {
-            val info = if (it.response.size != 1)
-                throw IllegalStateException("Unexpected user info count ${it.response.size}")
-            else it.response[0]
-            func.invoke(info)
-        } ?: throw Exception(getEmptyResponseErrorMessage("vk"))
+            response.body()?.let {
+                val info = if (it.response.size != 1)
+                    throw IllegalStateException("Unexpected user info count ${it.response.size}")
+                else it.response[0]
+                func.invoke(info)
+            } ?: throw Exception(getEmptyResponseErrorMessage("vk"))
+        }
     }
 }

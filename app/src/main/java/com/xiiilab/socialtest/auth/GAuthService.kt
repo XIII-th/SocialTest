@@ -40,8 +40,10 @@ object GAuthService : AbstractAuthService() {
             // The Task returned from this call is always completed, no need to attach
             // a listener.
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            mAuthResult.onNext(if (task.isSuccessful) AuthResult.SUCCESS else AuthResult.error {
-                task?.exception?.message
+            mAuthResult.onNext(when {
+                task.isCanceled -> AuthResult.CANCEL
+                task.isSuccessful -> AuthResult.SUCCESS
+                else -> AuthResult.error { task?.exception?.message }
             })
         }
     }
@@ -51,14 +53,13 @@ object GAuthService : AbstractAuthService() {
         mClient.signOut()
     }
 
-    override fun loadUserInfo(): UserInfo = fromAccount { UserInfo(it.givenName, it.familyName) }
+    override fun loadUserInfo(): UserInfo? = fromAccount { UserInfo(it.givenName, it.familyName) }
 
     override fun avatarUrl(): Maybe<String> = Maybe.fromCallable { fromAccount { it.photoUrl?.toString() } }
 
     override fun getServiceName(): String = "GOOGLE$SERVICE_NAME_SUFFIX"
 
-    private fun <T> fromAccount(function: (GoogleSignInAccount) -> T): T {
-        return GoogleSignIn.getLastSignedInAccount(mClient.applicationContext)?.run(function::invoke) ?:
-        throw IllegalStateException("Unable to obtain google account")
+    private fun <T> fromAccount(function: (GoogleSignInAccount) -> T?): T? {
+        return GoogleSignIn.getLastSignedInAccount(mClient.applicationContext)?.run(function::invoke)
     }
 }

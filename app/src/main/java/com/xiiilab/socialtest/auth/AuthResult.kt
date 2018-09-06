@@ -8,6 +8,7 @@ data class AuthResult private constructor(val state: AuthState, val error: Strin
 
     companion object {
         val SUCCESS = AuthResult(AuthState.SUCCESS)
+        val CANCEL = AuthResult(AuthState.CANCEL)
         fun error(message: String) = AuthResult(AuthState.FAILED, message)
         fun error(messageSupplier: () -> String?) = error(messageSupplier.invoke() ?: "Unexpected error")
     }

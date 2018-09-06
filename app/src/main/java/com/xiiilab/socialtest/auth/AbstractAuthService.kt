@@ -49,9 +49,12 @@ abstract class AbstractAuthService {
 
     fun userInfo(): Maybe<UserInfo> {
         // TODO: Cache user info
-        return Maybe.fromCallable { loadUserInfo() }.
-                subscribeOn(Schedulers.io()).
-                observeOn(AndroidSchedulers.mainThread())
+        return Maybe.create<UserInfo> { emitter ->
+            loadUserInfo()?.let { emitter.onSuccess(it) }
+            emitter.onComplete()
+        }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
     }
 
     abstract fun avatarUrl(): Maybe<String>
@@ -60,5 +63,5 @@ abstract class AbstractAuthService {
 
     protected fun getEmptyResponseErrorMessage(apiName: String) = "User info $apiName request return empty response"
 
-    protected abstract fun loadUserInfo(): UserInfo
+    protected abstract fun loadUserInfo(): UserInfo?
 }

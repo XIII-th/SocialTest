@@ -3,6 +3,15 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <import type="android.view.View"/>
+
+        <variable
+                name="loginVm"
+                type="com.xiiilab.socialtest.vm.LoginViewModel"/>
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -14,6 +23,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/vk_auth_button"
                 android:onClick="startAuthFlow"
+                android:clickable="@{!loginVm.inProgress}"
                 android:layout_margin="@dimen/fab_margin"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -27,6 +37,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/google_auth_button"
                 android:onClick="startAuthFlow"
+                android:clickable="@{!loginVm.inProgress}"
                 android:layout_margin="@dimen/fab_margin"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -40,12 +51,24 @@
                 android:layout_height="wrap_content"
                 android:text="@string/fb_auth_button"
                 android:onClick="startAuthFlow"
+                android:clickable="@{!loginVm.inProgress}"
                 android:layout_margin="@dimen/fab_margin"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/google_sign_in_button"
                 app:layout_constraintVertical_bias="0.0"/>
+
+        <ProgressBar
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/fab_margin"
+                android:visibility="@{loginVm.inProgress ? View.VISIBLE : View.INVISIBLE}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fb_sign_in_button"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
