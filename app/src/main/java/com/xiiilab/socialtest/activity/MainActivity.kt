@@ -3,6 +3,8 @@ package com.xiiilab.socialtest.activity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -30,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mListVm = ViewModelProviders.of(this, GithubVmFactory)[UserEventsListViewModel::class.java]
+                .apply { subscribeOnError(this@MainActivity::showMessage) }
 
         mAuthService = getAuthStrategy(intent?.extras)
 
@@ -45,6 +48,7 @@ class MainActivity : AppCompatActivity() {
                 .apply { setLifecycleOwner(this@MainActivity) }
         ViewModelProviders.of(this)[UserInfoViewModel::class.java]
                 .apply { init(mAuthService) }
+                .apply { subscribeOnError(this@MainActivity::showMessage) }
                 .also { binding.userInfoVm = it }
         nav_view.addHeaderView(binding.root)
     }
@@ -98,6 +102,10 @@ class MainActivity : AppCompatActivity() {
         drawer_layout.closeDrawer(GravityCompat.START)
         mAuthService.logout()
         finish()
+    }
+
+    private fun showMessage(@StringRes stringId: Int) {
+        Toast.makeText(this, stringId, Toast.LENGTH_LONG).show()
     }
 
     private fun getAuthStrategy(bundle: Bundle?): AbstractAuthService {

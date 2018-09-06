@@ -11,4 +11,7 @@
     <string name="fb_auth_button">Sign in with Facebook</string>
     <string name="logout">Logout</string>
     <string name="user_title" formatted="true">%s %s</string>
+    <string name="unable_to_load_avatar">Unable to load profile image</string>
+    <string name="unable_to_load_user_info">Unable to load profile info</string>
+    <string name="unable_to_request_events">Unable to request events</string>
 </resources>

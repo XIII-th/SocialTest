@@ -3,7 +3,6 @@ package com.xiiilab.socialtest.datasource
 import androidx.paging.PageKeyedDataSource
 import com.xiiilab.socialtest.api.github.GithubApi
 import com.xiiilab.socialtest.api.github.UserEvent
-import java.io.IOException
 
 /**
  * Created by XIII-th on 02.09.2018
@@ -26,12 +25,8 @@ class UserEventDataSource(val query: String, val api: GithubApi) : PageKeyedData
 
     private fun load(page: Int, count: Int): List<UserEvent> {
         val eventsQuery = api.getUserEvents(query, page, count)
-        try {
-            val response = eventsQuery.execute()
-            return response.body().orEmpty()
-        } catch (e: IOException) {
-            TODO()
-        }
+        val response = eventsQuery.execute()
+        return response.body().orEmpty()
     }
 
     private fun nextPage(page: Int, loaded: Int, required: Int): Int? = if (loaded < required) null else page + 1
