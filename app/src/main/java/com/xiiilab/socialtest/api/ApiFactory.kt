@@ -31,6 +31,7 @@ object ApiFactory {
                         .build()
                         .create(api) as Any
             }
+            @Suppress("UNCHECKED_CAST")
             return mInstances[api] as T
         }
     }

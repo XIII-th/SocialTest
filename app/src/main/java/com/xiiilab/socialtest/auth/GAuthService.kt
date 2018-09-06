@@ -4,9 +4,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.xiiilab.socialtest.R
 import io.reactivex.Maybe
 
 
@@ -20,8 +20,7 @@ object GAuthService : AbstractAuthService() {
 
     override fun init(appContext: Context) {
         super.init(appContext)
-        val requestToken = appContext.getString(R.string.google_access_token)
-        val gso = GoogleSignInOptions.Builder().requestIdToken(requestToken).build()
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
         mClient = GoogleSignIn.getClient(appContext, gso)
     }
 
@@ -52,13 +51,14 @@ object GAuthService : AbstractAuthService() {
         mClient.signOut()
     }
 
-    override fun loadUserInfo(): UserInfo {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun loadUserInfo(): UserInfo = fromAccount { UserInfo(it.givenName, it.familyName) }
 
-    override fun avatarUrl(): Maybe<String> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun avatarUrl(): Maybe<String> = Maybe.fromCallable { fromAccount { it.photoUrl?.toString() } }
 
     override fun getServiceName(): String = "GOOGLE$SERVICE_NAME_SUFFIX"
+
+    private fun <T> fromAccount(function: (GoogleSignInAccount) -> T): T {
+        return GoogleSignIn.getLastSignedInAccount(mClient.applicationContext)?.run(function::invoke) ?:
+        throw IllegalStateException("Unable to obtain google account")
+    }
 }
